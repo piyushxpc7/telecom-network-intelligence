@@ -1,0 +1,15 @@
+pandas
+numpy
+matplotlib
+seaborn
+pyspark
+python-dotenv
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+psycopg2-binary
+scikit-learn
+joblib
+apache-airflow
+pyarrow
