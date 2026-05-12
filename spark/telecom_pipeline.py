@@ -33,11 +33,14 @@ def create_session() -> SparkSession:
 def usage_schema() -> StructType:
     return StructType(
         [
-            StructField("timestamp", StringType(), True),
-            StructField("grid_id", StringType(), True),
-            StructField("call_count", DoubleType(), True),
-            StructField("sms_count", DoubleType(), True),
-            StructField("internet_usage", DoubleType(), True),
+            StructField("datetime", StringType(), True),
+            StructField("CellID", StringType(), True),
+            StructField("countrycode", StringType(), True),
+            StructField("smsin", DoubleType(), True),
+            StructField("smsout", DoubleType(), True),
+            StructField("callin", DoubleType(), True),
+            StructField("callout", DoubleType(), True),
+            StructField("internet", DoubleType(), True),
         ]
     )
 
@@ -47,7 +50,7 @@ def load_data(spark: SparkSession, raw_dir: str) -> DataFrame:
         spark.read.format("csv")
         .option("header", True)
         .schema(usage_schema())
-        .load(f"{raw_dir}/*.csv")
+        .load(f"{raw_dir}/sms-call-internet-mi-2013-11-0*.csv")
     )
 
     # Required in assessment: print record count per file.
@@ -64,16 +67,19 @@ def load_data(spark: SparkSession, raw_dir: str) -> DataFrame:
 
 def clean_data(df: DataFrame) -> DataFrame:
     cleaned = (
-        df.select("timestamp", "grid_id", "call_count", "sms_count", "internet_usage")
+        df.select(
+            F.col("datetime").alias("timestamp"),
+            F.col("CellID").alias("grid_id"),
+            (F.coalesce(F.col("callin"), F.lit(0)) + F.coalesce(F.col("callout"), F.lit(0))).alias("call_count"),
+            (F.coalesce(F.col("smsin"), F.lit(0)) + F.coalesce(F.col("smsout"), F.lit(0))).alias("sms_count"),
+            F.coalesce(F.col("internet"), F.lit(0)).alias("internet_usage"),
+        )
         .withColumn("event_timestamp", F.to_timestamp("timestamp"))
         .withColumn("event_date", F.to_date("event_timestamp"))
         .withColumn("hour", F.hour("event_timestamp"))
         .drop("timestamp")
         .filter(F.col("event_timestamp").isNotNull())
-        .filter(F.col("call_count").isNotNull())
-        .filter(F.col("internet_usage") >= 0)
-        .filter(F.col("call_count") >= 0)
-        .filter(F.col("sms_count") >= 0)
+        .filter(F.col("grid_id").isNotNull())
     )
     return cleaned
 

@@ -2,6 +2,11 @@
 
 End-to-end capstone project covering data engineering, analytics, APIs, dashboarding, and ML for telecom activity data.
 
+## Documentation
+- [Design Document](docs/design-document.md): Detailed project scope and technical specifications.
+- [Architecture Overview](docs/architecture.md): Data flow and component interaction.
+- [Architecture Diagram](docs/architecture-diagram.png): Visual representation of the system.
+
 ## Implemented phases
 
 - Phase 1: EDA notebook template + complete `UsageProcessor` class + API enrichment stub
