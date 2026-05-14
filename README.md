@@ -71,3 +71,9 @@ Swagger docs: `http://localhost:8000/docs`
 
 
 Updated via MCP Agent
+
+
+## New MCP Setup
+
+- Added new setup instructions for the MCP (Multiple Control Point) implementation. 
+- Ensure to follow the updated guidelines for effective deployment.
